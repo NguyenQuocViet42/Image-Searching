@@ -1,8 +1,9 @@
 class image_storage:
-    def __init__(self, ids_list, embs_list, images_list, boxes_list):
+    def __init__(self, ids_list, embs_list, images_list, boxes_list, list_table):
         self.embs_dict = dict(zip(ids_list, embs_list))
         self.images_dict = dict(zip(ids_list, images_list))
         self.boxes_dict = dict(zip(ids_list, boxes_list))
+        self.table_dict = dict(zip(ids_list, list_table))
         
     def add(self, id, emb, image):
         self.embs_dict[id] = emb
