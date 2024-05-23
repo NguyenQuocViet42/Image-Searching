@@ -14,8 +14,6 @@ import cv2
 
 def search_by_file(file: UploadFile, faiss_service:FaissService, images_dict, boxes_dict, detect_model, table_dict, table_name):
     try:
-        if table_name not in table_dict.values():
-            return {'path_image_list': "Table name k ton tai"}
         files = os.listdir('result')
         for name in files:
             os.remove('result/' + name)
@@ -48,14 +46,12 @@ def search_by_base64(imagebase64: SearchRequest, faiss_service:FaissService, ima
     try:
         image = imagebase64.image
         table_name = imagebase64.table
-        if table_name not in table_dict.values():
-            return {'path_image_list': "Table name k ton tai"}
         
         image = base64.b64decode(image)
         image = BytesIO(image)
         image = Image.open(image)
         image = np.array(image).astype(np.float32)
-        cv2.imwrite("base64.png", image)
+
         face, image_list = get_faces(image, detect_model)
         face = face[0]
         cv2.imwrite("result/1_search.png", face)
