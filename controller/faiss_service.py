@@ -5,19 +5,10 @@ import os
 import uvicorn
 from fastapi import FastAPI
 from model.recognizer import feature_extract
-from model.detector import get_faces, draw_box
+from tools.detect_tools import get_faces, draw_box
 from PIL import Image
 from io import BytesIO
 import cv2
-import matplotlib.image as mpimg
-
-
-def is_image_rgb(image):
-    # Giả định rằng pixel đầu tiên có giá trị khác nhau cho mỗi kênh màu
-    r, g, b = image[0, 0]
-    if r > b and r > g:
-        return "RGB"
-    return "BGR"
 
 def get_face_id(file: UploadFile, faiss_service:FaissService, images_dict, boxes_dict):
     try:

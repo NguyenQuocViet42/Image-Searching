@@ -4,7 +4,7 @@ sys.path.append("../")
 import cv2 
 import numpy as np
 import onnxruntime 
-from controller.detector_controller import *
+from tools.detect_tools import *
 import math
 
 class YOLOv5Face:

@@ -1,9 +1,9 @@
 import os
-import cv2
-from image_sql.database import image_storage
-from model.detector import get_faces
+from model.database import image_storage
+import sys 
+sys.path.append("../")
+from tools.detect_tools import get_faces
 from model.recognizer import feature_extract
-import matplotlib.image as mpimg
 import numpy as np
 from PIL import Image
 import pickle
@@ -17,12 +17,7 @@ def save_lists(ids_list, embs_list, images_list, boxes_list, file_name='data.pkl
             'boxes_list': boxes_list
         }, f)
 
-def load_lists(file_name='data.pkl'):
-    with open(file_name, 'rb') as f:
-        data = pickle.load(f)
-        return data['ids_list'], data['embs_list'], data['images_list'], data['boxes_list']
-
-def init_storage():
+def init_storage_from_images():
     ids_list = []
     embs_list = []
     images_list = []
@@ -44,9 +39,13 @@ def init_storage():
     
     storage = image_storage(ids_list, embs_list, images_list, boxes_list)
     save_lists(ids_list, embs_list, images_list, boxes_list)
+    
     return storage    
 
-def load_storage():
-    ids_list, embs_list, images_list, boxes_list = load_lists()
+def load_storage_from_pkl(file_name = 'data.pkl'):
+    with open(file_name, 'rb') as f:
+        data = pickle.load(f)
+    ids_list, embs_list, images_list, boxes_list = data['ids_list'], data['embs_list'], data['images_list'], data['boxes_list']
     storage = image_storage(ids_list, embs_list, images_list, boxes_list)
+    
     return storage

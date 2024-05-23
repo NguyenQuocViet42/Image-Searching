@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, File, UploadFile
 from model.faiss_service import FaissService
 from controller import faiss_service as faiss_service_controller
-from controller.start_service import get_faiss_service, images_dict, boxes_dict
+from start_service import get_faiss_service, images_dict, boxes_dict
 from fastapi import FastAPI, Request
 from controller.faiss_service import run_server
 

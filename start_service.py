@@ -1,13 +1,14 @@
-from controller.storage import init_storage, load_storage
+import sys
+import sys
+sys.path.append("controller")
+from storage import load_storage_from_pkl
 from model.faiss_service import FaissService
 from model.detector import YOLOv5Face
-from time import time
 import numpy as np
 
 detect_model_path = 'check_point/detect.onnx'
 
-
-storage = load_storage()
+storage = load_storage_from_pkl()
 embs_dict = storage.embs_dict
 images_dict = storage.images_dict
 boxes_dict = storage.boxes_dict

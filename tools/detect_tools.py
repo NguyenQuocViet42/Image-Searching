@@ -3,7 +3,7 @@ import cv2
 import numpy as np 
 import time 
 import torchvision
-from controller.start_service import detect_model
+from start_service import detect_model
 
 def nms(boxes, scores, iou_threshold):
     # Sort by score
