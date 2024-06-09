@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, File, UploadFile
 from model.faiss_service import FaissService
 from model.database import image_storage
 from controller import faiss_service as faiss_service_controller
-from controller.start_service import get_faiss_service, refresh_storage, add_new_image, load_storage_from_pkl, images_dict, boxes_dict, table_dict, detect_model, table_name_list, save_lists, embs_dict
+from controller.start_service import get_faiss_service, refresh_storage, add_new_image, load_storage_from_pkl, images_dict, boxes_dict, table_dict, detect_model, table_name_list, save_lists, embs_dict, faiss_service
 from fastapi import FastAPI, Request
 from controller.faiss_service import run_server
 from model.request import SearchRequest, AddRequest
@@ -18,7 +18,8 @@ async def search_by_file(file: UploadFile = File(...), table_name:str = "table_t
 
 
 @router.post('/search_by_base64')
-async def search_by_base64(imagebase64: SearchRequest, faiss_service: FaissService = Depends(get_faiss_service)):
+async def search_by_base64(imagebase64: SearchRequest):
+    global faiss_service
     if imagebase64.table not in table_name_list:
         return {'error': "Table name k ton tai"}
     return faiss_service_controller.search_by_base64(imagebase64, faiss_service, images_dict, boxes_dict, detect_model, table_dict)
@@ -41,7 +42,7 @@ async def create_new_table(table_name:str):
 
 @router.delete('/delete_table', description = 'Xoá một bảng')
 async def delete_table(table_name:str):
-    global images_dict, boxes_dict, table_dict, embs_dict, table_name_list
+    global images_dict, boxes_dict, table_dict, embs_dict, table_name_list, faiss_service
     if table_name not in table_name_list:
         return {'error': "Table name khong toi tai"}
     else:
@@ -54,6 +55,15 @@ async def delete_table(table_name:str):
                    images_list = list(images_dict.values()), boxes_list = list(boxes_dict.values()), 
                    list_table = list(table_dict.values()), table_name_list = table_name_list, file_name='data.pkl')
         
+        storage, table_name_list = load_storage_from_pkl()
+        embs_dict = storage.embs_dict
+        images_dict = storage.images_dict
+        boxes_dict = storage.boxes_dict
+        table_dict = storage.table_dict
+        ids = np.array(list(embs_dict.keys()))
+        embeddings = np.array(list(embs_dict.values()))
+        faiss_service = FaissService(embeddings, ids)
+        
     return {'status': "Xoa bang thanh cong"}
 
 
@@ -63,11 +73,11 @@ async def create_new_table(add_request:AddRequest):
     if add_request.table not in table_name_list:
         return {'error': "Table name khong toi tai"}
     else:
-        ids_list, embs_list, images_list, boxes_list = add_new_image(   image = add_request.image, image_path = add_request.image_path, 
-                                                                        ids_list = list(embs_dict.keys()), embs_list = list(embs_dict.values()), 
-                                                                        images_list = list(images_dict.values()), boxes_list = list(boxes_dict.values()))
         list_table = list(table_dict.values())
-        list_table.append(add_request.table)
+        ids_list, embs_list, images_list, boxes_list, list_table= add_new_image(   image = add_request.image, image_path = add_request.image_path, 
+                                                                        ids_list = list(embs_dict.keys()), embs_list = list(embs_dict.values()), 
+                                                                        images_list = list(images_dict.values()), boxes_list = list(boxes_dict.values()), 
+                                                                        table_list = list_table, table_name=add_request.table)
         
         save_lists(ids_list = ids_list, embs_list = embs_list, 
                    images_list = images_list, boxes_list = boxes_list, 

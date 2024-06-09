@@ -75,12 +75,11 @@ def load_storage_from_pkl(file_name = 'data.pkl'):
 
     return storage, list(table_name_list)
 
-def add_new_image(image, image_path, ids_list, embs_list, images_list, boxes_list):
+def add_new_image(image, image_path, ids_list, embs_list, images_list, boxes_list, table_list, table_name):
     index = 0
     image = base64.b64decode(image)
     image = BytesIO(image)
     image = Image.open(image)
-    image = np.array(image).astype(np.float32)
     image = np.array(image).astype(np.float32)
     faces, boxs = get_faces(image, detect_model)
 
@@ -91,10 +90,11 @@ def add_new_image(image, image_path, ids_list, embs_list, images_list, boxes_lis
         ids_list.append(index)
         embs_list.append(emb)
         images_list.append(image_path)
+        table_list.append(table_name)
         boxes_list.append(boxs[i])
         index += 1
     
-    return ids_list, embs_list, images_list, boxes_list
+    return ids_list, embs_list, images_list, boxes_list, table_list
 
 detect_model_path = 'check_point/detect.onnx'
 
